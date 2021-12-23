@@ -1,0 +1,9 @@
+.bsp
+.idea
+.DS_Store
+.metals/
+.vscode/
+
+api/project/target/
+api/target/
+api/event-store/target
