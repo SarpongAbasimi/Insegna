@@ -7,6 +7,7 @@ val eventStore = (project in file("./event-store"))
       Dependencies.http4sDsl,
       Dependencies.http4sBlazeServer,
       Dependencies.http4sBlazeClient,
-      Dependencies.catsEffect
+      Dependencies.catsEffect,
+      Dependencies.ciris
     )
   )
