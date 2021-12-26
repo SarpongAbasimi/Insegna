@@ -2,12 +2,15 @@ package com.theshow.core.http.routes
 
 import cats.effect.kernel.Async
 import com.theshow.core.domain.Event
+import com.theshow.core.kafka.KafkaProducerAlgebra
 import org.http4s.HttpRoutes
 import org.http4s.circe.jsonOf
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
+import cats.implicits._
 
-case class EventsRoutes[F[_]: Async]() extends Http4sDsl[F] {
+case class EventsRoutes[F[_]: Async](kafkaProducerAlgebra: KafkaProducerAlgebra[F])
+    extends Http4sDsl[F] {
   private[routes] val prefix = "/api/v1/event"
 
   private val routes: HttpRoutes[F] = HttpRoutes.of[F] { case req @ POST -> Root =>
@@ -17,7 +20,7 @@ case class EventsRoutes[F[_]: Async]() extends Http4sDsl[F] {
       .attemptAs[Event]
       .foldF(
         _ => BadRequest("And error occurred check the request body"),
-        _ => Created("Created")
+        event => kafkaProducerAlgebra.publish(event) *> Created("Created")
       )
   }
 
