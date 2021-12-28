@@ -11,6 +11,7 @@ val eventStore = (project in file("./event-store"))
       Dependencies.catsEffect,
       Dependencies.ciris,
       Dependencies.circeGenericExtra,
-      Dependencies.kafka
+      Dependencies.kafka,
+      Dependencies.elasticSearchClient
     ) ++ Dependencies.circe
   )
