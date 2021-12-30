@@ -1,22 +1,32 @@
 package com.theshow.core.server
 
-import cats.effect.ExitCode
+import cats.effect.{ExitCode, IO}
 import cats.effect.kernel.Async
 import cats.effect.std.Console
 import com.theshow.core.config.Config
+import com.theshow.core.elasticsearch.EsAlgebra
 import com.theshow.core.http.routes.EventsRoutes
 import com.theshow.core.kafka.{KafkaConsumerAlgebra, KafkaProducerAlgebra}
+import com.theshow.core.service.IndexService
 import org.http4s.blaze.server.BlazeServerBuilder
 import fs2.Stream
+import org.elasticsearch.client.RestHighLevelClient
 
 object Server {
-  def stream[F[_]: Async: Console](config: Config): fs2.Stream[F, ExitCode] = for {
+  def stream[F[_]: Async: Console](
+      config: Config,
+      restHighLevelClient: RestHighLevelClient
+  ): fs2.Stream[F, ExitCode] = for {
     _ <- Stream.eval(Console[F].println("Starting the server 🚀"))
 
     kafkaProducerAlgebra: KafkaProducerAlgebra[F] = KafkaProducerAlgebra
       .impl[F](config.kafkaConfig)
     kafkaConsumerAlgebra: KafkaConsumerAlgebra[F] = KafkaConsumerAlgebra
       .impl[F](config.kafkaConfig)
+    esAlgebra: EsAlgebra[F]       = EsAlgebra.impl[F](config.esConfig, restHighLevelClient)
+    indexService: IndexService[F] = IndexService.impl[F](kafkaConsumerAlgebra, esAlgebra)
+
+    _ <- Stream.eval(esAlgebra.createIndex)
 
     sever <- BlazeServerBuilder[F]
       .bindHttp(
@@ -25,6 +35,6 @@ object Server {
       )
       .withHttpApp(EventsRoutes[F](kafkaProducerAlgebra).router.orNotFound)
       .serve
-      .concurrently(kafkaConsumerAlgebra.consume)
+      .concurrently(indexService.persist)
   } yield sever
 }
