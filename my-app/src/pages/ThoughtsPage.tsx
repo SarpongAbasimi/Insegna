@@ -5,15 +5,26 @@ import {FormData} from "../utils/utls"
 
 export const ThoughtsPage = () => {
 
-    const [initialFormData, updatedFormData] = useState<FormData>({
-        name: "",
-        message: "",
-        mood: "",
-        whatIPlanToAchieve: "",
-        regret: ""
-    })
+    let emptyFormData = {
+        userName: '',
+        message: '',
+        mood: '',
+        whatIPlanToAchieve: '',
+        regrets: ''
+    }
 
-    const handleSubmit = (event: React.SyntheticEvent) => {
+    const [initialFormData, updatedFormData] = useState<FormData>(emptyFormData)
+
+    const postData = (event:FormData) => {
+        return fetch("http://localhost:8080/api/v1/event", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(event)
+        })
+    }
+
+    const handleSubmit = (event:  React.FormEvent<HTMLFormElement>) => {
+        postData(initialFormData).then(_ => updatedFormData(emptyFormData))
         event.preventDefault()
     }
 
