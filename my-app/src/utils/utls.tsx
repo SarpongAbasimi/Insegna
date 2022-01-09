@@ -1,8 +1,8 @@
 
 export type FormData = {
-    name:string,
+    userName:string,
     message:string,
     mood:string,
     whatIPlanToAchieve: string
-    regret?: string
+    regrets?: string
 }
