@@ -1,11 +1,13 @@
 import React from 'react';
 import { ThoughtsPage } from './pages/ThoughtsPage';
-import './App.css';
+ import styles from './App.module.scss';
+ import {SearchBar} from './components/searchBar/SearchBar'
 
 function App() {
   return (
-    <div className="App">
+    <div className={styles.App}>
       <ThoughtsPage/>
+      <SearchBar/>
     </div>
   );
 }
