@@ -6,3 +6,8 @@ export type FormData = {
     whatIPlanToAchieve: string
     regrets?: string
 }
+
+
+export interface SerchBarProp {
+    placeHolder: string
+}

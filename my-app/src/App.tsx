@@ -1,14 +1,19 @@
 import React from 'react';
-import { ThoughtsPage } from './pages/ThoughtsPage';
- import styles from './App.module.scss';
- import {SearchBar} from './components/searchBar/SearchBar'
+import { ThoughtsPage } from './pages/thoughtsPage/ThoughtsPage';
+import {IndexPage} from './pages/indexPage/IndexPage';
+import { BrowserRouter,  Routes, Route } from "react-router-dom";
+import './App.module.scss'
 
 function App() {
   return (
-    <div className={styles.App}>
-      <ThoughtsPage/>
-      <SearchBar/>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route>
+          <Route path="/" element={<IndexPage/>} />
+          <Route path="/new" element={<ThoughtsPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
