@@ -1,0 +1,28 @@
+@import '../../styles/themes';
+.main {
+    background-color: #2D2B2A;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    .children {
+        background-color: gold;
+        padding: 15px;
+        width: 70%;
+        height: 30%;
+        align-self:center;
+        border-radius: 2px;
+    }
+    .search {
+        margin-top: 5px;
+        width: 80px;
+        height: 60px;
+        background-color: #FFF033;
+        padding: 3px;
+        list-style-type: none;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border-radius: 2px;
+        font-family: $open-sans;
+    }
+}

@@ -1,0 +1,28 @@
+@import '../../styles/themes';
+
+.search {
+  display: flex;
+  background-color:  rgb(56, 57, 64);
+  border-radius: 5px;
+  padding: 10px;
+  flex-direction: column;
+  .children {
+    border-radius: 4px;
+    padding: 10px;
+    border: 0px;
+    margin-bottom: 5px;
+  }
+  .submit {
+    padding: 10px;
+    border-radius: 2px;
+    font-family: $open-sans;
+    border: 0px;
+ }
+  .submit:hover {
+      background-color: #33FFBD;
+  }
+  ::placeholder {
+    font-family: $open-sans;
+    padding-left: 5px;
+  }
+}

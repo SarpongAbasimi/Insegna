@@ -1,0 +1,24 @@
+@import '../../styles/themes';
+
+.main {
+    background-color:  rgb(56, 57, 64);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    .search {
+        width: 60%;
+        align-self: center;
+    }
+    .new {
+        margin-top: 5px;
+        width: 60px;
+        height: 60px;
+        background-color: #FFF033;
+        padding: 3px;
+        list-style-type: none;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        font-family: $open-sans;
+    }
+}
