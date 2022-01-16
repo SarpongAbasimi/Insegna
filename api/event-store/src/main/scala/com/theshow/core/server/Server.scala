@@ -1,6 +1,6 @@
 package com.theshow.core.server
 
-import cats.effect.{ExitCode, IO}
+import cats.effect.ExitCode
 import cats.effect.kernel.Async
 import cats.effect.std.Console
 import com.theshow.core.config.Config
@@ -11,6 +11,8 @@ import com.theshow.core.service.IndexService
 import org.http4s.blaze.server.BlazeServerBuilder
 import fs2.Stream
 import org.elasticsearch.client.RestHighLevelClient
+import org.http4s.Method
+import org.http4s.server.middleware.{CORS, CORSConfig}
 
 object Server {
   def stream[F[_]: Async: Console](
@@ -28,12 +30,19 @@ object Server {
 
     _ <- Stream.eval(esAlgebra.createIndex)
 
+    corService = CORS(
+      EventsRoutes[F](kafkaProducerAlgebra).router,
+      CORSConfig.default
+        .withAllowedOrigins(Set("http://localhost:3000"))
+        .withAllowedMethods(Some(Set(Method.POST)))
+    )
+
     sever <- BlazeServerBuilder[F]
       .bindHttp(
         config.serverConfig.port.value,
         config.serverConfig.host.value
       )
-      .withHttpApp(EventsRoutes[F](kafkaProducerAlgebra).router.orNotFound)
+      .withHttpApp(corService.orNotFound)
       .serve
       .concurrently(indexService.persist)
   } yield sever
