@@ -39,13 +39,11 @@ export const ThoughtsPage = () => {
 
   return (
     <div className={styles.main}>
-      <div className={styles.children}>
-        <Form
-          handleSubmit={handleSubmit}
-          onChange={onChange}
-          initialFormData={initialFormData}
-        />
-      </div>
+      <Form
+        handleSubmit={handleSubmit}
+        onChange={onChange}
+        initialFormData={initialFormData}
+      />
     </div>
   );
 };

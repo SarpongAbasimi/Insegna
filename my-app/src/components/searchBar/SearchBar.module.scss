@@ -1,28 +1,30 @@
-.search {
+.form {
   display: flex;
-  background-color: rgb(56, 57, 64);
-  border-radius: 5px;
-  padding: 10px;
   flex-direction: column;
-}
+  width: 50%;
+  margin: auto;
+  padding: 10rem 0;
 
-.children {
-  border-radius: 4px;
-  padding: 10px;
-  border: 0px;
-  margin-bottom: 5px;
-}
+  &__input {
+    border: 1px solid grey;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 20px;
 
-.submit {
-  padding: 10px;
-  border-radius: 2px;
-  border: 0px;
-}
+    &:focus {
+      outline: none;
+    }
+  }
 
-.submit:hover {
-  background-color: #33ffbd;
-}
+  &__button {
+    background-color: lightgrey;
+    padding: 10px;
+    border-radius: 2px;
+    border: 0px;
+    cursor: pointer;
 
-::placeholder {
-  padding-left: 5px;
+    &:hover {
+      background-color: lightblue;
+    }
+  }
 }

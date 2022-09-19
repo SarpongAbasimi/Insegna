@@ -6,13 +6,13 @@ import Naviagtion from "./components/UI/Navigation";
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
       <Naviagtion />
       <Routes>
         <Route path="/" element={<IndexPage />} />
         <Route path="/new" element={<ThoughtsPage />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
 
