@@ -1,0 +1,36 @@
+.header {
+  &__container {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    max-width: 80%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.logo {
+  padding: 2rem;
+
+  &__link {
+    color: black;
+    font-size: 3rem;
+    font-weight: bold;
+    text-decoration: none;
+  }
+}
+
+.nav {
+  display: flex;
+
+  &__item {
+    list-style: none;
+    padding: 2rem 3rem;
+  }
+
+  &__link {
+    color: black;
+    font-size: 2rem;
+    text-decoration: none;
+  }
+}
