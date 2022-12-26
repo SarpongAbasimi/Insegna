@@ -19,29 +19,34 @@ trait KafkaProducerAlgebra[F[_]] {
   def publish(event: Event): F[Unit]
 }
 
-object KafkaProducerAlgebra {
-  def impl[F[_]: Async: Console](kafkaConfig: KafkaConfig): KafkaProducerAlgebra[F] =
-    new KafkaProducerAlgebra[F] {
-      def publish(event: Event): F[Unit] = {
-        val valueSerializer: Serializer[F, Event] = Serializer[F, String]
-          .contramap[Event](_.asJson.noSpaces)
+abstract case class ProducerService[F[_]: Async: Console] private (
+    kafkaConfig: KafkaConfig,
+    producer: KafkaProducer.Metrics[F, Unit, Event]
+) extends KafkaProducerAlgebra[F] {
+  def publish(event: Event): F[Unit] = {
+    producer
+      .produce(ProducerRecords.one(ProducerRecord(kafkaConfig.topic.value, (), event)))
+      .flatten
+      .flatTap(_ => Console[F].println("Remember to transform me to a logger - Event published "))
+      .void
+  }
+}
 
-        val producerSettings = ProducerSettings(
-          keySerializer = Serializer[F, Unit],
-          valueSerializer = valueSerializer
-        ).withBootstrapServers(kafkaConfig.bootstrapServer.value)
-          .withAcks(Acks.One)
+object ProducerService {
+  def stream[F[_]: Async: Console](
+      kafkaConfig: KafkaConfig
+  ): fs2.Stream[F, ProducerService[F]] = {
+    val valueSerializer: Serializer[F, Event] = Serializer[F, String]
+      .contramap[Event](_.asJson.noSpaces)
 
-        KafkaProducer
-          .stream(producerSettings)
-          .evalMapChunk { producer =>
-            val record: ProducerRecord[Unit, Event] =
-              ProducerRecord(kafkaConfig.topic.value, (), event)
-            producer.produce(ProducerRecords.one(record)).flatten
-          }
-          .evalTapChunk(_ => Console[F].println(s"The event has been published"))
-          .compile
-          .drain
-      }
-    }
+    val producerSettings = ProducerSettings(
+      keySerializer = Serializer[F, Unit],
+      valueSerializer = valueSerializer
+    ).withBootstrapServers(kafkaConfig.bootstrapServer.value)
+      .withAcks(Acks.One)
+
+    KafkaProducer
+      .stream(producerSettings)
+      .map(producer => new ProducerService[F](kafkaConfig, producer) {})
+  }
 }

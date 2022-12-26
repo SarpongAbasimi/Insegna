@@ -6,7 +6,7 @@ import cats.effect.std.Console
 import com.theshow.core.config.Config
 import com.theshow.core.elasticsearch.EsAlgebra
 import com.theshow.core.http.routes.EventsRoutes
-import com.theshow.core.kafka.{KafkaConsumerAlgebra, KafkaProducerAlgebra}
+import com.theshow.core.kafka.{KafkaConsumerAlgebra, ProducerService}
 import com.theshow.core.service.IndexService
 import org.http4s.blaze.server.BlazeServerBuilder
 import fs2.Stream
@@ -19,10 +19,9 @@ object Server {
       config: Config,
       restHighLevelClient: RestHighLevelClient
   ): fs2.Stream[F, ExitCode] = for {
-    _ <- Stream.eval(Console[F].println("Starting the server 🚀"))
+    _               <- Stream.eval(Console[F].println("Starting the server 🚀"))
+    producerService <- ProducerService.stream[F](config.kafkaConfig)
 
-    kafkaProducerAlgebra: KafkaProducerAlgebra[F] = KafkaProducerAlgebra
-      .impl[F](config.kafkaConfig)
     kafkaConsumerAlgebra: KafkaConsumerAlgebra[F] = KafkaConsumerAlgebra
       .impl[F](config.kafkaConfig)
     esAlgebra: EsAlgebra[F]       = EsAlgebra.impl[F](config.esConfig, restHighLevelClient)
@@ -31,7 +30,7 @@ object Server {
     _ <- Stream.eval(esAlgebra.createIndex)
 
     corService = CORS(
-      EventsRoutes[F](kafkaProducerAlgebra).router,
+      EventsRoutes[F](producerService).router,
       CORSConfig.default
       .withAllowedOrigins(Set("http://localhost:3000"))
         .withAllowedMethods(Some(Set(Method.POST)))
